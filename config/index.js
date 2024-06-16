@@ -1,14 +1,21 @@
-const config = require('dbConfig');
 var mysql = require('mysql');
 const dbConfig = require('./db.config');
 
-var con = mysql.createConnection({
-  host: config.HOST,
-  user: config.USER,
-  password: config.PASSWORD
+var conn  = mysql.createPool({
+    connectionLimit     : 10,
+    host                : dbConfig.HOST,
+    user                : dbConfig.USER,
+    password            : dbConfig.PASSWORD,
+    database            : dbConfig.DB,
+    waitForConnections  : true,
+    connectionLimit     : 10,
+    queueLimit          : 0
+  });
+  
+  conn.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+    if (error) throw error;
+    console.log('Db is connected - The solution is: ', results[0].solution);
 });
 
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
+
+module.exports = conn;
